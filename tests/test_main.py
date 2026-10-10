@@ -17,6 +17,11 @@ def test_add():
     assert response.status_code == 200
     assert response.json()["result"] == 15
 
+def test_subtract():
+    response = client.get("/subtract?a=10&b=5")
+
+    assert response.status_code == 200
+    assert response.json()["result"] == 5
 
 def test_divide():
     response = client.get("/divide?a=10&b=2")
@@ -24,8 +29,102 @@ def test_divide():
     assert response.status_code == 200
     assert response.json()["result"] == 5.0
 
+
 def test_divide_by_zero():
     response = client.get("/divide?a=10&b=0")
 
     assert response.status_code == 400
     assert response.json()["detail"] == "Cannot divide by zero."
+
+
+def test_calculate_add():
+    response = client.post(
+        "/calculate",
+        json={
+            "a": 10,
+            "b": 5,
+            "operation": "add"
+        }
+    )
+
+    assert response.status_code == 200
+    assert response.json()["result"] == 15.0
+
+def test_calculate_subtract():
+    response = client.post(
+        "/calculate",
+        json={
+            "a": 10,
+            "b": 5,
+            "operation": "subtract"
+        }
+    )
+
+    assert response.status_code == 200
+    assert response.json()["result"] == 5.0
+
+
+def test_calculate_divide():
+    response = client.post(
+        "/calculate",
+        json={
+            "a": 10,
+            "b": 2,
+            "operation": "divide"
+        }
+    )
+
+    assert response.status_code == 200
+    assert response.json()["result"] == 5.0
+
+
+def test_calculate_divide_by_zero():
+    response = client.post(
+        "/calculate",
+        json={
+            "a": 10,
+            "b": 0,
+            "operation": "divide"
+        }
+    )
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Cannot divide by zero."
+
+
+def test_calculate_unsupported_operation():
+    response = client.post(
+        "/calculate",
+        json={
+            "a": 10,
+            "b": 5,
+            "operation": "power"
+        }
+    )
+
+    assert response.status_code == 422
+
+
+def test_calculate_invalid_type():
+    response = client.post(
+        "/calculate",
+        json={
+            "a": "hello",
+            "b": 5,
+            "operation": "add"
+        }
+    )
+
+    assert response.status_code == 422
+
+
+def test_calculate_missing_field():
+    response = client.post(
+        "/calculate",
+        json={
+            "a": 10,
+            "operation": "add"
+        }
+    )
+
+    assert response.status_code == 422

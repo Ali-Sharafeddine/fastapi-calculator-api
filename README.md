@@ -20,3 +20,19 @@ The project demonstrates:
 
 ```http
 GET /health
+
+
+## POST Request with Pydantic Validation
+
+The API also supports structured JSON requests through:
+
+POST /calculate
+
+Example request:
+
+```json
+{
+  "a": 10,
+  "b": 5,
+  "operation": "add"
+}
