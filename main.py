@@ -3,10 +3,17 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
+from database import (
+    create_table,
+    save_calculation,
+    get_calculations,
+    get_calculations_count
+)
 
 from typing import Literal
 from pydantic import BaseModel
 
+create_table()
 
 class CalculationRequest(BaseModel):
     a: float
@@ -49,6 +56,15 @@ def divide(a: float, b: float):
     }
 
 
+@app.get("/calculations")
+def calculations():
+    rows = get_calculations()
+
+    return {
+        "calculations": rows
+    }
+
+
 @app.post("/calculate")
 def calculate(request: CalculationRequest):
 
@@ -67,4 +83,20 @@ def calculate(request: CalculationRequest):
 
         result = request.a / request.b
 
+    save_calculation(
+        request.a,
+        request.b,
+        request.operation,
+        result
+    )
+
     return {"result": result}
+
+
+@app.get("/calculations/count")
+def calculations_count():
+    count = get_calculations_count()
+
+    return {
+        "count": count
+    }
