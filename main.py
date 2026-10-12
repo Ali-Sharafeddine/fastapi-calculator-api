@@ -7,7 +7,8 @@ from database import (
     create_table,
     save_calculation,
     get_calculations,
-    get_calculations_count
+    get_calculations_count,
+    delete_calculation
 )
 
 from typing import Literal
@@ -100,3 +101,16 @@ def calculations_count():
     return {
         "count": count
     }
+
+
+@app.delete("/calculations/{calculation_id}")
+def remove_calculation(calculation_id: int):
+    deleted = delete_calculation(calculation_id)
+
+    if not deleted:
+        raise HTTPException(
+            status_code=404,
+            detail="Calculation not found."
+        )
+
+    return {"deleted_id": calculation_id}

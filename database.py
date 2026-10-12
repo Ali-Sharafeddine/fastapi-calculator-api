@@ -75,3 +75,42 @@ def get_calculations_count():
     connection.close()
 
     return row[0]
+
+
+def delete_calculation(calculation_id: int) -> bool:
+    connection = get_connection()
+
+    try:
+        cursor = connection.cursor()
+
+        cursor.execute(
+            "DELETE FROM calculations WHERE id = ?",
+            (calculation_id,)
+        )
+
+        deleted = cursor.rowcount > 0
+        connection.commit()
+
+        return deleted
+
+    finally:
+        connection.close()
+
+
+def update_result(calculation_id: int, new_result: float):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        UPDATE calculations
+        SET result = ?
+        WHERE id = ?
+        """,
+        (new_result, calculation_id)
+    )
+
+    connection.commit()
+    connection.close()
+
+

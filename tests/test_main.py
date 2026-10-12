@@ -1,5 +1,7 @@
 from fastapi.testclient import TestClient
 from main import app
+import sqlite3
+from database import create_table, save_calculation, get_calculations
 
 client = TestClient(app)
 
@@ -128,3 +130,28 @@ def test_calculate_missing_field():
     )
 
     assert response.status_code == 422
+
+
+def test_delete_calculation(tmp_path, monkeypatch):
+    test_db = tmp_path / "test_calculator.db"
+
+    monkeypatch.setattr(
+        "database.get_connection",
+        lambda: sqlite3.connect(test_db)
+    )
+
+    create_table()
+
+    save_calculation(10, 5, "add", 15)
+
+    rows = get_calculations()
+    calculation_id = rows[0][0]
+
+    response = client.delete(f"/calculations/{calculation_id}")
+
+    assert response.status_code == 200
+    assert response.json()["deleted_id"] == calculation_id
+
+    response = client.delete(f"/calculations/{calculation_id}")
+
+    assert response.status_code == 404
