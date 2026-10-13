@@ -1,11 +1,6 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from typing import Literal
 from schemas import CalculationRequest
 from services import calculate_result
-
-app = FastAPI()
-
 from database import (
     create_table,
     save_calculation,
@@ -15,6 +10,7 @@ from database import (
 )
 
 
+app = FastAPI()
 create_table()
     
 
